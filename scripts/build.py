@@ -53,55 +53,41 @@ QT_CONFIG = {
     'common' : [
         '-opensource',
         '-confirm-license',
-        '-fast',
         '-release',
         '-static',
-        '-graphicssystem raster',
-        '-webkit',
-        '-exceptions',              # required by XmlPatterns
-        '-xmlpatterns',             # required for TOC support
         '-system-zlib',
         '-system-libpng',
         '-system-libjpeg',
-        '-no-libmng',
-        '-no-libtiff',
         '-no-accessibility',
-        '-no-stl',
-        '-no-qt3support',
-        '-no-phonon',
-        '-no-phonon-backend',
         '-no-opengl',
-        '-no-declarative',
-        '-no-script',
-        '-no-scripttools',
         '-no-sql-ibase',
         '-no-sql-mysql',
+        '-no-sql-oci',
+        '-no-sql-tds',
+        '-no-sql-db2',
         '-no-sql-odbc',
         '-no-sql-psql',
         '-no-sql-sqlite',
         '-no-sql-sqlite2',
-        '-no-mmx',
-        '-no-3dnow',
-        '-no-sse',
-        '-no-sse2',
-        '-no-multimedia',
-        '-nomake demos',
-        '-nomake docs',
+        '-no-qml-debug',
+        '-no-dbus',
         '-nomake examples',
         '-nomake tools',
         '-nomake tests',
-        '-nomake translations'
+        '-D QT_NO_GRAPHICSVIEW',
+        '-D QT_NO_GRAPHICSEFFECT',
+        '-D QT_NO_STYLESHEET',
+        '-D QT_NO_STYLE_CDE',
+        '-D QT_NO_STYLE_CLEANLOOKS',
+        '-D QT_NO_STYLE_MOTIF',
+        '-D QT_NO_STYLE_PLASTIQUE',
+        '-D QT_NO_PRINTPREVIEWDIALOG'
     ],
 
     'msvc': [
         '-mp',
-        '-qt-style-windows',
-        '-qt-style-cleanlooks',
-        '-no-style-windowsxp',
-        '-no-style-windowsvista',
-        '-no-style-plastique',
-        '-no-style-motif',
-        '-no-style-cde',
+        '-icu',
+        '-no-angle',
         '-openssl-linked'           # static linkage for OpenSSL
     ],
 
@@ -924,10 +910,12 @@ def build_msvc(config, basedir):
         '-L %s\\lib' % libdir,
         'OPENSSL_LIBS="-L%s\\\\lib -lssleay32 -llibeay32 -lUser32 -lAdvapi32 -lGdi32 -lCrypt32"' % libdir.replace('\\', '\\\\'))
 
-    os.chdir(qtdir)
     if not exists('is_configured'):
-        shell('%s\\..\\qt\\configure.exe %s' % (basedir, configure_args))
+        mkdir_p(os.path.join(qtdir, 'qtbase'))
+        os.chdir(os.path.join(qtdir, 'qtbase'))
+        shell('%s\\..\\qt\\qtbase\\configure.bat -top-level %s' % (basedir, configure_args))
         open('is_configured', 'w').write('')
+    os.chdir(qtdir)
     shell('nmake')
 
     appdir = os.path.join(basedir, config, 'app')
